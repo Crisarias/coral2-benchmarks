@@ -1,0 +1,104 @@
+QMCPACK CORAL2 Benchmark Details
+
+Prepared by Paul Kent, kentpr@ornl.gov
+
+1. Obtaining files
+
+An additional 2.2GB NiO input file is required
+(NiO-fcc-supertwist111-supershift000-S64.h5) and should be placed in
+the run directory, e.g. coral2. It can be downloaded from
+https://anl.box.com/s/pveyyzrc2wuvg5tmxjzzwxeo561vh3r0
+
+$ md5sum *.h5
+40ecaf05177aa4bbba7d3bf757994548 NiO-fcc-supertwist111-supershift000-S64.h5
+$ ls -l *.h5 2180300396
+NiO-fcc-supertwist111-supershift000-S64.h5
+
+2. Building QMCPACK
+
+Full instructions to build and run QMCPACK are included in the
+README.md in the source archive and described in more detail in
+https://docs.qmcpack.org/qmcpack_manual.pdf
+
+The manual includes example build recipes for current leadership
+platforms and various compiler combinations.
+
+To build the MPI-OpenMP version, typical steps are:
+
+cd build
+cmake -DCMAKE_C_COMPILER=mpicc \
+      -DCMAKE_CXX_COMPILER=mpicxx \
+      -DENABLE_SOA=1 \
+      -DQMC_MIXED_PRECISION=1 ..
+make -j 8
+
+To build the MPI-CUDA version, typical steps are:
+
+cd build
+cmake -DCMAKE_C_COMPILER=mpicc \
+      -DCMAKE_CXX_COMPILER=mpicxx \
+      -DQMC_CUDA=1 ..
+make -j 8
+
+We require the OpenMP version to be built specifying
+QMC_MIXED_PRECISION=1, which sets mixed single and double precision
+mathematics to be used, consistent with the defaults for the CUDA
+build.
+
+ENABLE_SOA=1 enables “structure of array” data layout optimizations
+that significantly improve performance on modern CPU
+architectures. The CUDA implementation already includes these
+optimizations.
+
+3. Running reference runs
+
+mpirun -n 18000 qmcpack NiO-gpu-titan-reference.in.xml > out_reference
+
+4. Running benchmark runs for proposed architecture
+
+Adjust MPI ranks, OpenMP threads, steps and walker count as needed for
+analysis and projections. The steps and walker count (per mpi) are
+given near the end of the XML input files.
+
+The following would yield an equivalent amount on work on a GPU and 32
+core CPU system if walkers=32 in the XML:
+
+mpirun -n 4096 qmcpack NiO-example.in.xml >out_gpu
+
+export OMP_NUM_THREADS=32
+mpirun -n 4096 qmcpack NiO-example.in.xml >out_cpu
+
+5. Computing Figure of Merit 
+
+A commented awk script is included to compute the FOM. To change the assumed number of production steps
+
+>awk -f compute_fom.awk out
+Time per step :  13.7293 seconds for all  16  walkers
+Time required :  7825.7 seconds for  250 equilibration and 320  production steps
+Samples obtained by this run :  5120
+For FOM, would require 32000  as many samples, e.g. by weak scaling to  32000  more nodes
+FOM =  1.78451  speedup vs reference assuming perfect weak scaling from this run
+
+>awk -v prodsteps=160 -f compute_fom.awk out
+Time per step :  13.7293 seconds for all  16  walkers
+Time required :  5629.01 seconds for  250 equilibration and 160  production steps
+Samples obtained by this run :  2560
+For FOM, would require 64000  as many samples, e.g. by weak scaling to  64000  more nodes
+FOM =  2.4809  speedup vs reference assuming perfect weak scaling from this run
+
+Notice that in the above example, halving the number of production
+steps and doubling the node count does not result in a doubling of the
+fom.
+
+The projected FOM can be computed by extrapolating timings from
+measured or estimated performance on lower node counts to the expected
+node count. e.g. a projected 90% parallel scalability would scale the
+FOM by a factor 0.9.
+
+6. Verification of Results
+
+qmcpack/nexus/bin/qmca -q e NiO-example.s002.dmc.dat
+
+NiO-example  series 2  LocalEnergy           =  -23695.748010 +/- 13.444611
+
+The printed local energy should be O(-24000).

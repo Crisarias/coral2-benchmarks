@@ -1,0 +1,21 @@
+#Nodes, DMC time (s)
+1 5.2070e+02  
+2 5.3381e+02  
+4 5.5248e+02  
+8 5.6901e+02  
+256 5.9922e+02  
+4096 6.1801e+02  
+8192 6.2432e+02  
+16384 6.2535e+02  
+18000 6.2880e+02  
+
+# Grepped output:
+#run_1/bench.out_1:  QMC Execution time = 5.2070e+02 secs 
+#run_2/bench.out_2:  QMC Execution time = 5.3381e+02 secs 
+#run_4/bench.out_4:  QMC Execution time = 5.5248e+02 secs 
+#run_8/bench.out_8:  QMC Execution time = 5.6901e+02 secs 
+#run_256/bench.out_256:  QMC Execution time = 5.9922e+02 secs 
+#run_4096/bench.out_4096:  QMC Execution time = 6.1801e+02 secs 
+#run_8192/bench.out_8192:  QMC Execution time = 6.2432e+02 secs 
+#run_16384/bench.out_16384:  QMC Execution time = 6.2535e+02 secs 
+#run_18000/bench.out_18000:  QMC Execution time = 6.2880e+02 secs 

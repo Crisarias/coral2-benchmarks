@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+#PBS -A mat151
+#PBS -N Reference_1
+#PBS -j oe
+#PBS -l walltime=1:00:00,nodes=1
+#PBS -q debug
+#PBS -m e
+#PBS -M kentpr@ornl.gov
+
+#
+echo --- START `date`
+echo --- PBS_NUM_NODES = ${PBS_NUM_NODES}
+cd $PBS_O_WORKDIR
+
+if [ ! -e run_${PBS_NUM_NODES} ]; then
+mkdir run_${PBS_NUM_NODES}
+fi
+
+cd run_${PBS_NUM_NODES}
+
+echo --- Running in `pwd`
+
+# Update input files and executable name as needed
+for needed_files in NiO-gpu-titan-reference.in.xml Ni.opt.xml O.xml NiO-fcc-supertwist111-supershift000-S64.h5 qmcpack
+do
+ln -sf ../${needed_files} .
+done
+
+
+# Build with GNU PrgEnv on titan, not default PGI.
+current_prgenv=`echo $LOADEDMODULES|sed -e 's/.*PrgEnv/PrgEnv/' -e 's/\/.*//g'`
+echo $current_prgenv
+module swap $current_prgenv PrgEnv-gnu
+module load cudatoolkit
+
+export OMP_NUM_THREADS=16  # The QMCPACK CUDA implementation is not threaded, but the drivers may benefit
+
+aprun -n ${PBS_NUM_NODES} -N 1 ./qmcpack NiO-gpu-titan-reference.in.xml > bench.out_${PBS_NUM_NODES}
+
+echo --- END `date`

@@ -1,0 +1,41 @@
+Mar 19, 2018: Version 1.7 was released
+
+Typo in Step16_int.c was fixed
+f = ( r2 > 0.0f ) ? m * "s2" : 0.0f; 
+
+Feb 22, 2018: Version 1.6 was released
+
+Fixed non-BG/Q pass in Step16_int.c when __bgq__ is not defined
+
+Feb 16, 2018: Version 1.5 was released
+
+Added clarifications to the summary file
+Fixed pow() call in Step16_int
+
+Nov 2, 2017: Version 1.4 was released
+
+Added recommendations for CORAL2 problem sizes
+
+July 2, 2013: Version 1.3 was released
+
+Added a recommendation for larger thread stack size
+
+June 18, 2013: Version 1.2 was released
+
+Added large run cases: 8K, 24K and 48K
+Added "CORAL HACC Benchmark Summary v1.1.docx" benchmark description document
+
+May 31, 2013: Version 1.1 was released
+
+Updated halo_finder/BGQCM.c file with generic version of the function.
+
+Updated halo_finder/BGQStep16.c file to be compatible with the use of generic 
+version of short-force evaluation kernel.
+
+Included this file to track changes
+
+Included env/bashrc.mn3 file to port to MareNostrum III supercomputer at 
+Barcelona Supercomputing Center
+
+
+May 1, 2013: Version 1.0 was released
